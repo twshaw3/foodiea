@@ -12,6 +12,7 @@ import com.yelp.clientlib.entities.options.CoordinateOptions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -57,15 +58,9 @@ public class FoodieaEngine {
 
         Response<SearchResponse> response = call.execute();
 
-        ArrayList<Business> businesses = response.body().businesses();
+        List<Business> businesses = response.body().businesses();
 
-        ArrayList<Business> filteredBusinesses = new ArrayList<>();
-        for (Business b : businesses) {
-            if (!b.isClosed() && b.rating() >= 3.5) {
-                filteredBusinesses.add(b);
-                Log.d(Constants.TAG, b.name());
-            }
-        }
+        List<Business> filteredBusinesses = filterBusinesses(businesses);
 
         Random random = new Random(System.currentTimeMillis());
         int i = random.nextInt(filteredBusinesses.size());
@@ -73,5 +68,16 @@ public class FoodieaEngine {
         Business chosen = filteredBusinesses.get(i);
 
         return new FoodieaResult(chosen.name(), chosen.rating(), chosen.location().displayAddress().get(0));
+    }
+
+    private List<Business> filterBusinesses(List<Business> businesses) {
+        List<Business> filteredBusinesses = new ArrayList<>();
+        for (Business b : businesses) {
+            if (!b.isClosed() && b.rating() >= 3.5) {
+                filteredBusinesses.add(b);
+                Log.d(Constants.TAG, b.name());
+            }
+        }
+        return filteredBusinesses;
     }
 }
