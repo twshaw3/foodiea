@@ -6,15 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,20 +19,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.yelp.clientlib.connection.YelpAPI;
-import com.yelp.clientlib.connection.YelpAPIFactory;
-import com.yelp.clientlib.entities.Business;
-import com.yelp.clientlib.entities.SearchResponse;
-
-import java.io.IOException;
-import java.security.PrivateKey;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import autovalue.shaded.org.apache.commons.lang.exception.ExceptionUtils;
-import retrofit.Call;
-import retrofit.Response;
 
 
 public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -46,10 +27,40 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
     LocationRequest mLocationRequest;
     private static final String TAG = FoodieaHomeActivity.class.getName();
     private static final int BUFFERED_REQUEST = 0;
+    private Button mPOBOYButton;
+    private Button mDINERButton;
+    private Button mCOUTEAUXButton;
+    private FoodieaEngine.PriceLevel priceLevel= FoodieaEngine.PriceLevel.DINER;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG,"oncreate check"+priceLevel.showPrice());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mPOBOYButton = (Button) findViewById(R.id.mPOBOYButton);
+        mDINERButton = (Button) findViewById(R.id.mDINERButton);
+        mCOUTEAUXButton = (Button) findViewById(R.id.mCOUTEAUXButton);
+        mPOBOYButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("FOODIEA", "pressed diner button");
+                priceLevel= FoodieaEngine.PriceLevel.POBOY;
+            }
+        });
+        mDINERButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("FOODIEA", "pressed diner button");
+                priceLevel= FoodieaEngine.PriceLevel.DINER;
+            }
+        });
+        mCOUTEAUXButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("FOODIEA", "pressed diner button");
+                priceLevel= FoodieaEngine.PriceLevel.COUTEAUX;
+            }
+        });
         buildLocationClient();
         Log.d(Constants.TAG, "onCreate");
         ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
@@ -57,6 +68,8 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
             public void OnShake() {
                 Intent intent = new Intent(FoodieaHomeActivity.this, BufferingActivity.class);
                 intent.putExtra("location", mCurrentLocation);
+                Log.d(TAG, "shake check " + priceLevel.showPrice());
+                intent.putExtra("pricelevel", priceLevel);
                 startActivityForResult(intent, BUFFERED_REQUEST);
             }
         });

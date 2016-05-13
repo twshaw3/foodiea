@@ -4,4 +4,7 @@
     <string name="title_activity_buffering">BufferingActivity</string>
     <string name="buffer_test">BufferTest</string>
     <string name="loading_str">Loading...</string>
+    <string name="mDINERButton">Diner</string>
+    <string name="mPOBOYButton">Poboy</string>
+    <string name="mCOUTEAUXButton">Lux</string>
 </resources>

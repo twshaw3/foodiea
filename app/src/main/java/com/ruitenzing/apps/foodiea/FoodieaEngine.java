@@ -27,9 +27,17 @@ public class FoodieaEngine {
     private final Location location;
 
     public static enum PriceLevel {
-        POBOY,
-        DINER,
-        COUTEAUX
+        POBOY("cheap"),
+        DINER("affordable"),
+        COUTEAUX("fancy");
+        private String price;
+        PriceLevel(String p){
+            price = p;
+        }
+        String showPrice(){
+            return price;
+        }
+
     }
 
     public FoodieaEngine(PriceLevel priceLevel, Location location) {
@@ -44,7 +52,7 @@ public class FoodieaEngine {
 
         Map<String, String> params = new HashMap<>();
 
-        params.put("term", Constants.SEARCH_TERM);
+        params.put("term", priceLevel.showPrice()+" "+ Constants.DINNER_SEARCH);
         params.put("limit", "20");
         params.put("sort", "2");
         params.put("radius_filter", "5000");
