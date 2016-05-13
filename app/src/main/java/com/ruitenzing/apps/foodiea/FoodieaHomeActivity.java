@@ -43,32 +43,27 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
         mPOBOYButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("FOODIEA", "pressed diner button");
                 priceLevel= FoodieaEngine.PriceLevel.POBOY;
             }
         });
         mDINERButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("FOODIEA", "pressed diner button");
                 priceLevel= FoodieaEngine.PriceLevel.DINER;
             }
         });
         mCOUTEAUXButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("FOODIEA", "pressed diner button");
                 priceLevel= FoodieaEngine.PriceLevel.COUTEAUX;
             }
         });
         buildLocationClient();
-        Log.d(Constants.TAG, "onCreate");
         ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
                 Intent intent = new Intent(FoodieaHomeActivity.this, BufferingActivity.class);
                 intent.putExtra("location", mCurrentLocation);
-                Log.d(TAG, "shake check " + priceLevel.showPrice());
                 intent.putExtra("pricelevel", priceLevel);
                 startActivityForResult(intent, BUFFERED_REQUEST);
             }

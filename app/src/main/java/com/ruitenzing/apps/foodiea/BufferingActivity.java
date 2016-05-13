@@ -21,7 +21,7 @@ import java.io.IOException;
 public class BufferingActivity extends AppCompatActivity {
     private static final String TAG = BufferingActivity.class.getName();
     private GifWebView view;
-    private FoodieaEngine.PriceLevel priceLevel;//= FoodieaEngine.PriceLevel.DINER;
+    private FoodieaEngine.PriceLevel priceLevel;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -32,9 +32,6 @@ public class BufferingActivity extends AppCompatActivity {
 
         Location location = getIntent().getExtras().getParcelable("location");
         priceLevel = (FoodieaEngine.PriceLevel) getIntent().getExtras().getSerializable("pricelevel");
-
-        Log.d(TAG, location.toString());
-        Log.d(TAG, priceLevel.toString());
 
         executeSearch(location);
     }
