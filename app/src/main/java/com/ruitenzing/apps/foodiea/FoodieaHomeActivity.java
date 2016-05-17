@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,11 +34,15 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
     private Button mDINERButton;
     private Button mCOUTEAUXButton;
     private FoodieaEngine.PriceLevel priceLevel= FoodieaEngine.PriceLevel.DINER;
+    private boolean isConnectedNetwork=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG,"oncreate check"+priceLevel.showPrice());
+        Log.d(TAG, "oncreate check" + priceLevel.showPrice());
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            
+        }
         setContentView(R.layout.activity_main);
         mPOBOYButton = (Button) findViewById(R.id.mPOBOYButton);
         mDINERButton = (Button) findViewById(R.id.mDINERButton);
@@ -43,25 +50,32 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
         mPOBOYButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                priceLevel= FoodieaEngine.PriceLevel.POBOY;
+                priceLevel = FoodieaEngine.PriceLevel.POBOY;
             }
         });
         mDINERButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                priceLevel= FoodieaEngine.PriceLevel.DINER;
+                priceLevel = FoodieaEngine.PriceLevel.DINER;
             }
         });
         mCOUTEAUXButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                priceLevel= FoodieaEngine.PriceLevel.COUTEAUX;
+                priceLevel = FoodieaEngine.PriceLevel.COUTEAUX;
             }
         });
+
         buildLocationClient();
         ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
+                Log.d(TAG, "OnShake: shaked!");
+                if (! checkNetworkStatus()){
+                    Log.d(TAG, "onCreate:not connected!");
+                    renderErrorMessage(Constants.NETWORK_ERROR);
+                    return;
+                }
                 Intent intent = new Intent(FoodieaHomeActivity.this, BufferingActivity.class);
                 intent.putExtra("location", mCurrentLocation);
                 intent.putExtra("pricelevel", priceLevel);
@@ -74,8 +88,14 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
             renderRecommendation(result);
         }
 
-
     }
+    private boolean checkNetworkStatus(){
+        ConnectivityManager cManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo nInfo = cManager.getActiveNetworkInfo();
+        isConnectedNetwork = nInfo != null && nInfo.isConnected();
+        return isConnectedNetwork;
+    }
+
     private void renderRecommendation(FoodieaResult result){
         TextView nameView = (TextView) findViewById(R.id.restaurant_name);
         nameView.setText(result.name);
@@ -85,6 +105,13 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
         addressView.setText(result.address);
 
 
+    }
+    private void renderErrorMessage(int image_id){
+
+        Log.d(TAG, "renderErrorMessage: rendered!");
+        ImageView img= (ImageView) findViewById(R.id.error_image);
+        Log.d(TAG, "renderErrorMessage: image create!");
+        img.setImageResource(image_id);
     }
 
     private void buildLocationClient(){
@@ -115,7 +142,12 @@ public class FoodieaHomeActivity extends AppCompatActivity implements GoogleApiC
     protected void onResume() {
         super.onResume();
         ShakeDetector.start();
+        if(!checkNetworkStatus()){
+            Log.d(TAG, "onResume: is not connected");
+            return;
+        }
         mLocationClient.connect();
+
     }
 
     @Override

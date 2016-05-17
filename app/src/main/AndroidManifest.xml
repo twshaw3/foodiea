@@ -3,7 +3,14 @@
     package="com.ruitenzing.apps.foodiea">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <receiver android:name="com.ruitenzing.apps.foodiea.NetworkChangeReceiver">
+        <intent-filter>
+            <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+        </intent-filter>
+    </receiver>
 
     <application
         android:allowBackup="true"
